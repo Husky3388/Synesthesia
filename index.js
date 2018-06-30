@@ -1,0 +1,1348 @@
+var i = 0;
+
+var bool_intro = true;
+var bool_red = false;
+var bool_blue = false;
+var bool_yellow = false;
+var bool_purple = false;
+var bool_orange = false;
+var bool_green = false;
+var bool_end = false;
+
+// timing is when text is done typing
+// 8 is a timing thing with fps
+var intro = 'Hello!\nWelcome to Synesthesia.';
+var intro_timing = intro.length * 8;
+var yourName = 'What\'s your name?';
+var yourName_timing = intro_timing + yourName.length * 8;
+
+var red = 'Red, a sound so fierce and yet so calm.';
+var red_timing = yourName_timing + red.length * 8;
+var red1 = 'Aggression and passion.\nA bond made through strength and desire.';
+var red1_timing = red_timing + red1.length * 8;
+var red2 = 'What I see and feel,\na love for life and the life that flows within me.';
+var red2_timing = red1_timing + red2.length * 8;
+var red3 = 'A crimson fire, such a warm sound.';
+var red3_timing = red2_timing + red3.length * 8;
+
+var blue = 'Blue, a sound that soothes the world itself.';
+var blue_timing = red3_timing + blue.length * 8;
+var blue1 = 'Calm, yet so strong.\nExisting through flow.';
+var blue1_timing = blue_timing + blue1.length * 8;
+var blue2 = 'What I see and feel,\na relaxation among the skies.';
+var blue2_timing = blue1_timing + blue2.length * 8;
+var blue3 = 'An azure ocean, such a comforting sound.';
+var blue3_timing = blue2_timing + blue3.length * 8;
+
+var yellow = 'Yellow, a sound that shines with every smile.';
+var yellow_timing = blue3_timing + yellow.length * 8;
+var yellow1 = 'Joy from sunshine.\nA sunflower\'s kiss.';
+var yellow1_timing = yellow_timing + yellow1.length * 8;
+var yellow2 = 'What I see and feel,\na bright illumination of our hopes and dreams.';
+var yellow2_timing = yellow1_timing + yellow2.length * 8;
+var yellow3 = 'Golden starry night, such a hopeful sound.';
+var yellow3_timing = yellow2_timing + yellow3.length * 8;
+
+var purple = 'Purple, a sound of royalty not many knows.';
+var purple_timing = yellow3_timing + purple.length * 8;
+var purple1 = 'A sense of power and stability.\nElusive, yet surreal.';
+var purple1_timing = purple_timing + purple1.length * 8;
+var purple2 = 'What I see and feel,\na taste of finely aged wine.';
+var purple2_timing = purple1_timing + purple2.length * 8;
+var purple3 = 'A mysterious occurence, such a luxurious sound.';
+var purple3_timing = purple2_timing + purple3.length * 8;
+
+var orange = 'Orange, a sound where creativity knows no bounds.';
+var orange_timing = purple3_timing + orange.length * 8;
+var orange1 = 'A dance among youth.\nA fascination of the wise.';
+var orange1_timing = orange_timing + orange1.length * 8;
+var orange2 = 'What I see and feel,\nan energetic enjoyment of expression.';
+var orange2_timing = orange1_timing + orange2.length * 8;
+var orange3 = 'A bundle of fun, such a vibrant sound.';
+var orange3_timing = orange2_timing + orange3.length * 8;
+
+var green = 'Green, a sound that nature knows too well.';
+var green_timing = orange3_timing + green.length * 8;
+var green1 = 'Life seeping through a forest.\nWind that sings.';
+var green1_timing = green_timing + green1.length * 8;
+var green2 = 'What I see and feel,\nleaves rustling as the wind weaves around me.';
+var green2_timing = green1_timing + green2.length * 8;
+var green3 = 'Natural life, such a harmonious sound.';
+var green3_timing = green2_timing + green3.length * 8;
+
+// timing needs to be redefined after name is given
+var end = '';
+var end_timing;
+var end1 = 'An indescribable being.\nOr rather, an endless description.';
+var end1_timing;
+var end2 = 'What I see and feel,\na person with a unique aura.';
+var end2_timing;
+var end3 = 'You have such a colorful sound.';
+var end3_timing;
+
+////////////////////////////////////////////////////////////////
+
+var activateKeyboard = false;
+var name = '';
+var time = 0;
+
+// location of text, leave it alone
+////////////////////////////////////////////////////////////////
+
+var text = new PointText({
+	point: view.center,
+	justification: 'center',
+	fontSize: 30,
+	fillColor: 'white'
+});
+
+var input = new PointText({
+	point: view.center,
+	content: '',
+	justification: 'center',
+	fontSize: 30,
+	fillColor: 'white'
+});
+input.position.y += 30;
+
+var endText = new PointText({
+	point: view.center,
+	content: '',
+	justification: 'center',
+	fontSize: 30,
+	fillColor: 'black',
+	opacity: 0,
+	content: 'Created by:\nJason Thai\n\nCredits to the many Paper.js developers(their examples and stuff),\nsounds, and websites\nthat helped me finish this.\n\nAnd thank you!'
+});
+endText.position.y -= (view.size.height / 5);
+
+// animation stuff
+////////////////////////////////////////////////////////////////
+
+var circles = [];
+var fire = [];
+
+// for blue
+var width, height, center;
+var blue_points = 10;
+var smooth = true;
+var path = new Path();
+var mousePos = view.center / 2;
+var pathHeight = mousePos.y;
+path.fillColor = 'blue';
+initializePath();
+
+function initializePath() {
+	center = view.center;
+	width = view.size.width;
+	height = view.size.height / 2;
+	path.segments = [];
+	path.add(view.bounds.bottomLeft);
+	for (var b = 1; b < blue_points; b++) {
+		var blue_point = new Point(width / blue_points * b, center.y);
+		path.add(blue_point);
+	}
+	path.add(view.bounds.bottomRight);
+	path.visible = false;
+	project.activeLayer.insertChild(0, path);
+}
+
+// for yellow
+var stars = [];
+var velocity = 1;
+
+function randomInt(min,max)
+{
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+for(var y = 0; y <= 500; y++) {
+	var star = new Path.Circle(new Point(view.size.width, view.size.height) * Point.random(), randomInt(0.5, 2))
+	stars.push(star)
+
+	star.visible = false;
+	project.activeLayer.insertChild(0, star);
+}
+
+
+for(var y = 0; y < stars.length; y++) {
+	var chance = Math.random()
+
+	if(chance < 0.025) {
+		stars[y].fillColor = "gold";
+	}
+
+	else if(chance < 0.6) {
+		stars[y].fillColor = "yellow";
+	}
+
+	else {
+		stars[y].fillColor = "lightyellow";
+	}
+}
+
+
+for(var y = 0; y < stars.length; y++) {
+	var assignedRate = Math.random() * velocity + 0.1
+	stars[y].rate = assignedRate;
+}
+
+// for purple
+var leftPath = new Path({
+    strokeColor: 'purple',
+	opacity: 0.5
+});
+
+var rightPath = new Path({
+	strokeColor: 'violet',
+	opacity: 0.5
+});
+
+var amount = 8;
+var step = view.size.width / (amount + 1);
+var flip = true;
+
+for (var pp = 0; pp <= amount; pp++) {
+	leftPath.add(new Point(pp * step, 0));
+	rightPath.add(new Point(pp * step, 0));
+}
+
+leftPath.visible = false;
+rightPath.visible = false;
+project.activeLayer.insertChild(0, leftPath);
+project.activeLayer.insertChild(0, rightPath);
+
+var group = new Group({
+	children: [leftPath, rightPath],
+	transformContent: false,
+	strokeWidth: 30,
+	strokeJoin: 'round',
+	strokeCap: 'butt',
+	pivot: leftPath.position,
+	position: view.center
+});
+
+var audio, source, analyserL, analyserR, freqByteData;
+
+// Pause animation until we have data
+view.pause();
+
+var AudioContext = window.AudioContext || window.webkitAudioContext;
+if (AudioContext) {
+	audio = new AudioContext();
+	source = audio.createBufferSource();
+	// Create two separate analyzers for left and right channel.
+	analyserL = audio.createAnalyser();
+	analyserL.smoothingTimeConstant = 0.25;
+	analyserL.fftSize = Math.pow(2, amount) * 2;
+	analyserR = audio.createAnalyser();
+	analyserR.smoothingTimeConstant = analyserL.smoothingTimeConstant;
+	analyserR.fftSize = analyserL.fftSize;
+	// Create the buffer to receive the analyzed data.
+	freqByteData = new Uint8Array(analyserL.frequencyBinCount);
+	// Create a splitter to feed them both
+	var splitter = audio.createChannelSplitter();
+	// Connect audio processing graph
+	source.connect(splitter);
+	splitter.connect(analyserL, 0, 0);
+	splitter.connect(analyserR, 1, 0);
+	// Connect source to output also so we can hear it
+	source.connect(audio.destination);
+	loadAudioBuffer('http://assets.paperjs.org/audio/gnossienne.mp3');
+} else {
+	// TODO: Print error message
+	alert('Audio not supported');
+}
+
+function loadAudioBuffer(url) {
+	// Load asynchronously
+	var request = new XMLHttpRequest();
+	request.open("GET", url, true);
+	request.responseType = "arraybuffer";
+
+	request.onload = function() { 
+		audio.decodeAudioData(
+			request.response,
+			function(buffer) {
+				source.buffer = buffer;
+				source.loop = true;
+				// source.start(0);
+				view.play();
+			},
+			
+			function(buffer) {
+				alert("Error loading MP3");
+			}
+		);
+	};
+	request.send();
+}
+
+function getEqualizerBands(data) {
+	var bands = [];
+	var amount = Math.sqrt(data.length) / 2;
+	for(var i = 0; i < amount; i++) {
+		var start = Math.pow(2, i) - 1;
+		var end = start * 2 + 1;
+		var sum = 0;
+		for (var j = start; j < end; j++) {
+			sum += data[j];
+		}
+		var avg = sum / (255 * (end - start));
+		bands[i] = Math.sqrt(avg / Math.sqrt(2));
+	}
+	return bands;
+}
+
+// orange
+
+function Ball(r, p, v) {
+	this.radius = r;
+	this.point = p;
+	this.vector = v;
+	this.maxVec = 15;
+	this.numSegment = Math.floor(r / 3 + 2);
+	this.boundOffset = [];
+	this.boundOffsetBuff = [];
+	this.sidePoints = [];
+	this.path = new Path({
+		fillColor: 'orange',
+		blendMode: 'lighter'
+	});
+	this.path.fillColor.hue += (Math.random() * 40) - 30;
+
+	for (var oi = 0; oi < this.numSegment; oi ++) {
+		this.boundOffset.push(this.radius);
+		this.boundOffsetBuff.push(this.radius);
+		this.path.add(new Point());
+		this.sidePoints.push(new Point({
+			angle: 360 / this.numSegment * oi,
+			length: 1
+		}));
+	}
+}
+
+Ball.prototype = {
+	turnOff: function() {
+		this.path.visible = false;
+	},
+
+	iterate: function() {
+		this.checkBorders();
+		if (this.vector.length > this.maxVec)
+			this.vector.length = this.maxVec;
+		this.point += this.vector;
+		this.updateShape();
+	},
+
+	checkBorders: function() {
+		var size = view.size;
+		if (this.point.x < -this.radius)
+			this.point.x = size.width + this.radius;
+		if (this.point.x > size.width + this.radius)
+			this.point.x = -this.radius;
+		if (this.point.y < -this.radius)
+			this.point.y = size.height + this.radius;
+		if (this.point.y > size.height + this.radius)
+			this.point.y = -this.radius;
+	},
+
+	updateShape: function() {
+		var segments = this.path.segments;
+		for (var oi = 0; oi < this.numSegment; oi ++)
+			segments[oi].point = this.getSidePoint(oi);
+
+		this.path.smooth();
+		for (var oi = 0; oi < this.numSegment; oi ++) {
+			if (this.boundOffset[oi] < this.radius / 4)
+				this.boundOffset[oi] = this.radius / 4;
+			var next = (oi + 1) % this.numSegment;
+			var prev = (oi > 0) ? oi - 1 : this.numSegment - 1;
+			var offset = this.boundOffset[oi];
+			offset += (this.radius - offset) / 15;
+			offset += ((this.boundOffset[next] + this.boundOffset[prev]) / 2 - offset) / 3;
+			this.boundOffsetBuff[oi] = this.boundOffset[oi] = offset;
+		}
+	},
+
+	react: function(b) {
+		var dist = this.point.getDistance(b.point);
+		if (dist < this.radius + b.radius && dist != 0) {
+			var overlap = this.radius + b.radius - dist;
+			var direc = (this.point - b.point).normalize(overlap * 0.015);
+			this.vector += direc;
+			b.vector -= direc;
+
+			this.calcBounds(b);
+			b.calcBounds(this);
+			this.updateBounds();
+			b.updateBounds();
+		}
+	},
+
+	getBoundOffset: function(b) {
+		var diff = this.point - b;
+		var angle = (diff.angle + 180) % 360;
+		return this.boundOffset[Math.floor(angle / 360 * this.boundOffset.length)];
+	},
+
+	calcBounds: function(b) {
+		for (var oi = 0; oi < this.numSegment; oi ++) {
+			var tp = this.getSidePoint(oi);
+			var bLen = b.getBoundOffset(tp);
+			var td = tp.getDistance(b.point);
+			if (td < bLen) {
+				this.boundOffsetBuff[oi] -= (bLen  - td) / 2;
+			}
+		}
+	},
+
+	getSidePoint: function(index) {
+		return this.point + this.sidePoints[index] * this.boundOffset[index];
+	},
+
+	updateBounds: function() {
+		for (var oi = 0; oi < this.numSegment; oi ++)
+			this.boundOffset[oi] = this.boundOffsetBuff[oi];
+	}
+
+};
+
+//--------------------- main ---------------------
+
+var balls = [];
+var numBalls = 18;
+for (var oi = 0; oi < numBalls; oi++) {
+	var position = Point.random() * view.size;
+	var vector = new Point({
+		angle: 360 * Math.random(),
+		length: Math.random() * 10
+	});
+	var radius = Math.random() * 60 + 60;
+	balls.push(new Ball(radius, position, vector));
+}
+
+// green
+
+// Adapted from Flocking Processing example by Daniel Schiffman:
+// http://processing.org/learning/topics/flocking.html
+
+var Boid = Base.extend({
+	turnOff: function() {
+		this.head.visible = false;
+		this.path.visible = false;
+		this.shortPath.visible = false;
+	},
+
+	initialize: function(position, maxSpeed, maxForce) {
+		var strength = Math.random() * 0.5;
+		this.acceleration = new Point();
+		this.vector = Point.random() * 2 - 1;
+		this.position = position.clone();
+		this.radius = 30;
+		this.maxSpeed = maxSpeed + strength;
+		this.maxForce = maxForce + strength;
+		this.amount = strength * 10 + 10;
+		this.count = 0;
+		this.createItems();
+	},
+
+	run: function(boids) {
+		this.lastLoc = this.position.clone();
+		if (!groupTogether) {
+			this.flock(boids);
+		} else {
+			this.align(boids);
+		}
+		this.borders();
+		this.update();
+		this.calculateTail();
+		this.moveHead();
+	},
+
+	calculateTail: function() {
+		var segments = this.path.segments,
+			shortSegments = this.shortPath.segments;
+		var speed = this.vector.length;
+		var pieceLength = 5 + speed / 3;
+		var point = this.position;
+		segments[0].point = shortSegments[0].point = point;
+		// Chain goes the other way than the movement
+		var lastVector = -this.vector;
+		for (var g = 1; g < this.amount; g++) {
+			var vector = segments[g].point - point;
+			this.count += speed * 10;
+			var wave = Math.sin((this.count + g * 3) / 300);
+			var sway = lastVector.rotate(90).normalize(wave);
+			point += lastVector.normalize(pieceLength) + sway;
+			segments[g].point = point;
+			if (g < 3)
+				shortSegments[g].point = point;
+			lastVector = vector;
+		}
+		this.path.smooth();
+	},
+
+	createItems: function() {
+		this.head = new Shape.Ellipse({
+			center: [0, 0],
+			size: [13, 8],
+			fillColor: 'darkgreen'
+		});
+
+		this.path = new Path({
+			strokeColor: 'lightgreen',
+			strokeWidth: 2,
+			strokeCap: 'round'
+		});
+		for (var g = 0; g < this.amount; g++)
+			this.path.add(new Point());
+
+		this.shortPath = new Path({
+			strokeColor: 'green',
+			strokeWidth: 4,
+			strokeCap: 'round'
+		});
+		for (var g = 0; g < Math.min(3, this.amount); g++)
+			this.shortPath.add(new Point());
+	},
+
+	moveHead: function() {
+		this.head.position = this.position;
+		this.head.rotation = this.vector.angle;
+	},
+
+	// We accumulate a new acceleration each time based on three rules
+	flock: function(boids) {
+		var separation = this.separate(boids) * 3;
+		var alignment = this.align(boids);
+		var cohesion = this.cohesion(boids);
+		this.acceleration += separation + alignment + cohesion;
+	},
+
+	update: function() {
+		// Update velocity
+		this.vector += this.acceleration;
+		// Limit speed (vector#limit?)
+		this.vector.length = Math.min(this.maxSpeed, this.vector.length);
+		this.position += this.vector;
+		// Reset acceleration to 0 each cycle
+		this.acceleration = new Point();
+	},
+
+	seek: function(target) {
+		this.acceleration += this.steer(target, false);
+	},
+
+	arrive: function(target) {
+		this.acceleration += this.steer(target, true);
+	},
+
+	borders: function() {
+		var vector = new Point();
+		var position = this.position;
+		var radius = this.radius;
+		var size = view.size;
+		if (position.x < -radius) vector.x = size.width + radius;
+		if (position.y < -radius) vector.y = size.height + radius;
+		if (position.x > size.width + radius) vector.x = -size.width -radius;
+		if (position.y > size.height + radius) vector.y = -size.height -radius;
+		if (!vector.isZero()) {
+			this.position += vector;
+			var segments = this.path.segments;
+			for (var g = 0; g < this.amount; g++) {
+				segments[g].point += vector;
+			}
+		}
+	},
+
+	// A method that calculates a steering vector towards a target
+	// Takes a second argument, if true, it slows down as it approaches
+	// the target
+	steer: function(target, slowdown) {
+		var steer,
+			desired = target - this.position;
+		var distance = desired.length;
+		// Two options for desired vector magnitude
+		// (1 -- based on distance, 2 -- maxSpeed)
+		if (slowdown && distance < 100) {
+			// This damping is somewhat arbitrary:
+			desired.length = this.maxSpeed * (distance / 100);
+		} else {
+			desired.length = this.maxSpeed;
+		}
+		steer = desired - this.vector;
+		steer.length = Math.min(this.maxForce, steer.length);
+		return steer;
+	},
+
+	separate: function(boids) {
+		var desiredSeperation = 60;
+		var steer = new Point();
+		var count = 0;
+		// For every boid in the system, check if it's too close
+		for (var g = 0, l = boids.length; g < l; g++) {
+			var other = boids[g];
+			var vector = this.position - other.position;
+			var distance = vector.length;
+			if (distance > 0 && distance < desiredSeperation) {
+				// Calculate vector pointing away from neighbor
+				steer += vector.normalize(1 / distance);
+				count++;
+			}
+		}
+		// Average -- divide by how many
+		if (count > 0)
+			steer /= count;
+		if (!steer.isZero()) {
+			// Implement Reynolds: Steering = Desired - Velocity
+			steer.length = this.maxSpeed;
+			steer -= this.vector;
+			steer.length = Math.min(steer.length, this.maxForce);
+		}
+		return steer;
+	},
+
+	// Alignment
+	// For every nearby boid in the system, calculate the average velocity
+	align: function(boids) {
+		var neighborDist = 25;
+		var steer = new Point();
+		var count = 0;
+		for (var g = 0, l = boids.length; g < l; g++) {
+			var other = boids[g];
+			var distance = this.position.getDistance(other.position);
+			if (distance > 0 && distance < neighborDist) {
+				steer += other.vector;
+				count++;
+			}
+		}
+
+		if (count > 0)
+			steer /= count;
+		if (!steer.isZero()) {
+			// Implement Reynolds: Steering = Desired - Velocity
+			steer.length = this.maxSpeed;
+			steer -= this.vector;
+			steer.length = Math.min(steer.length, this.maxForce);
+		}
+		return steer;
+	},
+
+	// Cohesion
+	// For the average location (i.e. center) of all nearby boids,
+	// calculate steering vector towards that location
+	cohesion: function(boids) {
+		var neighborDist = 100;
+		var sum = new Point();
+		var count = 0;
+		for (var g = 0, l = boids.length; g < l; g++) {
+			var other = boids[g];
+			var distance = this.position.getDistance(other.position);
+			if (distance > 0 && distance < neighborDist) {
+				sum += other.position; // Add location
+				count++;
+			}
+		}
+		if (count > 0) {
+			sum /= count;
+			// Steer towards the location
+			return this.steer(sum, false);
+		}
+		return sum;
+	}
+});
+
+var boids = [];
+var groupTogether = false;
+
+// Add the boids:
+for (var g = 0; g < 30; g++) {
+	var position = Point.random() * view.size;
+	boids.push(new Boid(position, 10, 0.05));
+}
+
+
+////////////////////////////////////////////////////////////////
+
+// handle animation here
+////////////////////////////////////////////////////////////////
+
+function onFrame(event) {
+
+	// intro
+	////////////////////////////////////////////////////////////////
+
+	// purple
+	var step = view.size.width / (amount + 1);
+	var scale = view.size.height / 1.75;
+	analyserL.getByteFrequencyData(freqByteData);
+	var leftBands = getEqualizerBands(freqByteData, true);
+	analyserR.getByteFrequencyData(freqByteData);
+	var rightBands = getEqualizerBands(freqByteData, true);
+	for (var p = 1; p <= amount; p++) {
+		leftPath.segments[p].point = [p * step, -leftBands[p - 1] * scale];
+		rightPath.segments[p].point = [p * step, -rightBands[p - 1] * scale * (flip ? -1 : 1)];
+	}
+	leftPath.smooth();
+	rightPath.smooth();
+	group.pivot = [leftPath.position.x, 0];
+	group.position = view.center;
+
+	// blue
+	pathHeight += (center.y - mousePos.y - pathHeight) / 10;
+	for (var b = 1; b < blue_points; b++) {
+		var sinSeed = event.count + (b + b % 10) * 100;
+		var sinHeight = Math.sin(sinSeed / 200) * pathHeight;
+		var yPos = Math.sin(sinSeed / 100) * sinHeight + height;
+		path.segments[b].point.y = yPos;
+	}
+	if (smooth)
+		path.smooth({ type: 'continuous' });
+
+	// test area
+	
+	// if(endText.opacity < 1) {
+	// 	endText.opacity += 0.005;
+	// }
+
+	if(bool_intro) {
+		if (event.count < intro_timing && event.count % 6 === 0) {
+		    if (i < intro.length) {
+		    	text.content += intro.charAt(i);	 
+			    i++;
+			}
+	  	}
+
+	  	if (event.count % 48 === 0) {
+	  		var maxPoint = new Point(view.size.width, view.size.height);
+			var randomPoint = Point.random();
+			var point = maxPoint * randomPoint;
+			var newCircle = new Path.Circle(point, 5);
+			newCircle.strokeColor = 'blue';
+			newCircle.strokeColor.hue = Math.random() * 361;
+			newCircle.strokeWidth = 10;
+			newCircle.opacity = 1.0;
+			project.activeLayer.insertChild(0, newCircle);
+			circles.push(newCircle);
+		}
+		for(var j = 0; j < circles.length; j++) {
+			circles[j].strokeColor.hue += 0.5;
+			circles[j].scale(1.01);
+			circles[j].opacity *= 0.993;
+			if(circles[j].area > 100000) {
+				circles[j].remove();
+				circles.splice(j, 1);
+				j--;
+			}
+		}
+
+		if (event.count === intro_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > intro_timing && event.count % 6 === 0) {
+			if (i < yourName.length) {
+		    	text.content += yourName.charAt(i);	 
+			    i++;
+			}
+		}
+		if (event.count > yourName_timing) {
+			activateKeyboard = true;
+		}
+
+		if (name) {
+			// event.time = seconds, event.count = 60 fps
+			red_timing += event.time * 10;
+			red_timing = Math.round(red_timing);
+			bool_intro = false;
+			bool_red = true;
+			text.content = '';
+			i = 0;
+
+			end = name + ', a sound that only you can hear.';
+			end_timing = green3_timing + end.length * 8;
+			end1_timing = end_timing + end1.length * 8;
+			end2_timing = end1_timing + end2.length * 8;
+			end3_timing = end2_timing + end3.length * 8;
+		}
+	}
+
+	// red
+	////////////////////////////////////////////////////////////////
+
+	if(bool_red) {
+		if (event.count < red_timing && event.count % 6 === 0) {
+		    if (i < red.length) {
+		    	text.content += red.charAt(i);	 
+			    i++;
+			}
+	  	}
+
+	  	if (event.count === red_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > red_timing && event.count % 6 === 0 && event.count < red1_timing) {
+			if (i < red1.length) {
+		    	text.content += red1.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === red1_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > red1_timing && event.count % 6 === 0 && event.count < red2_timing) {
+			if (i < red2.length) {
+		    	text.content += red2.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === red2_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > red2_timing && event.count % 6 === 0) {
+			if (i < red3.length) {
+		    	text.content += red3.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === red3_timing) {
+			bool_red = false;
+			bool_blue = true;
+			text.content = '';
+			i = 0;
+			red_sound.stop();
+			blue_sound.play();
+			path.visible = true;
+		}
+
+	  	if (event.count % 24 === 0) {
+			var point = new Point(view.size.width * Math.random(), view.size.height);
+
+	  		var newFire = new Path.Circle({
+			    center: point,
+			    radius: view.bounds.height * 0.05
+			});
+			newFire.fillColor = {
+			    gradient: {
+			        stops: [['yellow', 0.01], ['red', 0.1], ['black', 1]],
+			        radial: true
+			    },
+			    origin: newFire.position,
+			    destination: newFire.bounds.rightCenter
+			};
+			newFire.opacity = 1.0;
+			project.activeLayer.insertChild(0, newFire);
+			fire.push(newFire);
+	  	}
+
+	  	for(var k = 0; k < fire.length; k++) {
+	  		var destination = Math.random();
+	  		if(destination >= 0.5) {
+	  			fire[k].position.x++;
+	  		} else {
+	  			fire[k].position.x--;
+	  		}
+	  		fire[k].position.y -= 2;
+	  		fire[k].opacity *= 0.993;
+	  		if(fire[k].opacity < 0.1) {
+	  			fire[k].remove();
+	  			fire.splice(k, 1);
+	  			k--;
+	  		}
+	  	}
+
+	  	for(var j = 0; j < circles.length; j++) {
+			circles[j].strokeColor.hue += 0.5;
+			circles[j].scale(1.01);
+			circles[j].opacity *= 0.993;
+			if(circles[j].area > 100000) {
+				circles[j].remove();
+				circles.splice(j, 1);
+				j--;
+			}
+		}
+	}
+
+	// blue
+	////////////////////////////////////////////////////////////////
+
+	if(bool_blue) {
+		if (event.count < blue_timing && event.count % 6 === 0) {
+		    if (i < blue.length) {
+		    	text.content += blue.charAt(i);	 
+			    i++;
+			}
+	  	}
+
+	  	if (event.count === blue_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > blue_timing && event.count % 6 === 0 && event.count < blue1_timing) {
+			if (i < blue1.length) {
+		    	text.content += blue1.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === blue1_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > blue1_timing && event.count % 6 === 0 && event.count < blue2_timing) {
+			if (i < blue2.length) {
+		    	text.content += blue2.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === blue2_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > blue2_timing && event.count % 6 === 0) {
+			if (i < blue3.length) {
+		    	text.content += blue3.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === blue3_timing) {
+			bool_blue = false;
+			bool_yellow = true;
+			text.content = '';
+			i = 0;
+			blue_sound.stop();
+			path.visible = false;
+
+			for(var y = 0; y <= 500; y++) {
+				stars[y].visible = true;
+			}
+		}
+
+		for(k = 0; k < fire.length; k++) {
+	  		var destination = Math.random();
+	  		if(destination >= 0.5) {
+	  			fire[k].position.x++;
+	  		} else {
+	  			fire[k].position.x--;
+	  		}
+	  		fire[k].position.y -= 2;
+	  		fire[k].opacity *= 0.993;
+	  		if(fire[k].opacity < 0.1) {
+	  			fire[k].remove();
+	  			fire.splice(k, 1);
+	  			k--;
+	  		}
+	  	}
+	}
+
+	// yellow
+	////////////////////////////////////////////////////////////////
+
+	if(bool_yellow) {
+		if (event.count < yellow_timing && event.count % 6 === 0) {
+		    if (i < yellow.length) {
+		    	text.content += yellow.charAt(i);	 
+			    i++;
+			}
+	  	}
+
+	  	if (event.count === yellow_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > yellow_timing && event.count % 6 === 0 && event.count < yellow1_timing) {
+			if (i < yellow1.length) {
+		    	text.content += yellow1.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === yellow1_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > yellow1_timing && event.count % 6 === 0 && event.count < yellow2_timing) {
+			if (i < yellow2.length) {
+		    	text.content += yellow2.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === yellow2_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > yellow2_timing && event.count % 6 === 0) {
+			if (i < yellow3.length) {
+		    	text.content += yellow3.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === yellow3_timing) {
+			bool_yellow = false;
+			bool_purple = true;
+			text.content = '';
+			i = 0;
+			leftPath.visible = true;
+			rightPath.visible = true;
+			source.start(0);
+			for(var y = 0; y <= 500; y++) {
+				stars[y].visible = false;
+			}
+		}
+
+		if (event.count % 144 === 0) {
+			yellow_sound.play();
+		}
+
+	 	for(var y = 0; y < stars.length; y++) {
+			stars[y].translate(stars[y].rate, 0)
+			if(stars[y].position.x > view.size.width) {
+				stars[y].position.x = 0;
+			}
+
+			else if(stars[y].position.x < 0) {
+				stars[y].position.x = view.size.width;
+			}
+		}
+	}
+
+	// purple
+	////////////////////////////////////////////////////////////////
+
+	if(bool_purple) {
+		if (event.count < purple_timing && event.count % 6 === 0) {
+		    if (i < purple.length) {
+		    	text.content += purple.charAt(i);	 
+			    i++;
+			}
+	  	}
+
+	  	if (event.count === purple_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > purple_timing && event.count % 6 === 0 && event.count < purple1_timing) {
+			if (i < purple1.length) {
+		    	text.content += purple1.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === purple1_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > purple1_timing && event.count % 6 === 0 && event.count < purple2_timing) {
+			if (i < purple2.length) {
+		    	text.content += purple2.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === purple2_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > purple2_timing && event.count % 6 === 0) {
+			if (i < purple3.length) {
+		    	text.content += purple3.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === purple3_timing) {
+			bool_purple = false;
+			bool_orange = true;
+			text.content = '';
+			i = 0;
+			leftPath.visible = false;
+			rightPath.visible = false;
+			source.stop(0);
+			orange_sound.play();
+		}
+
+		for(var s = 0; s < stars.length; s++) {
+	  		stars[s].position.y += 2;
+	  		stars[s].rotate(2);
+	  		stars[s].opacity *= 0.993;
+	  		if(stars[s].opacity < 0.1) {
+	  			stars[s].remove();
+	  			stars.splice(s, 1);
+	  			s--;
+	  		}
+	  	}
+		
+	}
+
+	// orange
+	////////////////////////////////////////////////////////////////
+
+	if(bool_orange) {
+		if (event.count < orange_timing && event.count % 6 === 0) {
+		    if (i < orange.length) {
+		    	text.content += orange.charAt(i);	 
+			    i++;
+			}
+	  	}
+
+	  	if (event.count === orange_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > orange_timing && event.count % 6 === 0 && event.count < orange1_timing) {
+			if (i < orange1.length) {
+		    	text.content += orange1.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === orange1_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > orange1_timing && event.count % 6 === 0 && event.count < orange2_timing) {
+			if (i < orange2.length) {
+		    	text.content += orange2.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === orange2_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > orange2_timing && event.count % 6 === 0) {
+			if (i < orange3.length) {
+		    	text.content += orange3.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === orange3_timing) {
+			bool_orange = false;
+			bool_green = true;
+			text.content = '';
+			i = 0;
+			orange_sound.stop();
+			green_sound.play();
+			for (var oi = 0, ok = balls.length; oi < ok; oi++) {
+				balls[oi].turnOff();
+			}
+		}
+
+		for (var oi = 0; oi < balls.length - 1; oi++) {
+			for (var oj = oi + 1; oj < balls.length; oj++) {
+				balls[oi].react(balls[oj]);
+			}
+		}
+		for (var oi = 0, ok = balls.length; oi < ok; oi++) {
+			balls[oi].iterate();
+		}
+		
+	}
+
+	// green
+	////////////////////////////////////////////////////////////////
+
+	if(bool_green) {
+		if (event.count < green_timing && event.count % 6 === 0) {
+		    if (i < green.length) {
+		    	text.content += green.charAt(i);	 
+			    i++;
+			}
+	  	}
+
+	  	if (event.count === green_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > green_timing && event.count % 6 === 0 && event.count < green1_timing) {
+			if (i < green1.length) {
+		    	text.content += green1.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === green1_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > green1_timing && event.count % 6 === 0 && event.count < green2_timing) {
+			if (i < green2.length) {
+		    	text.content += green2.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === green2_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > green2_timing && event.count % 6 === 0) {
+			if (i < green3.length) {
+		    	text.content += green3.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === green3_timing) {
+			bool_green = false;
+			bool_end = true;
+			text.content = '';
+			i = 0;
+			green_sound.stop();
+			document.getElementById("myCanvas").style.backgroundColor = 'white';
+			text.fillColor = 'black';
+
+			for (var g = 0, l = boids.length; g < l; g++) {
+				boids[g].turnOff();
+			}
+		}
+
+		for (var g = 0, l = boids.length; g < l; g++) {
+			if (groupTogether) {
+				var length = ((g + event.count / 30) % l) / l * heartPath.length;
+				var point = heartPath.getPointAt(length);
+				if (point)
+					boids[g].arrive(point);
+			}
+			boids[g].run(boids);
+		}
+		
+	}
+
+	// end
+	////////////////////////////////////////////////////////////////
+
+	if(bool_end) {
+		if (event.count < end_timing && event.count % 6 === 0) {
+		    if (i < end.length) {
+		    	text.content += end.charAt(i);	 
+			    i++;
+			}
+	  	}
+
+	  	if (event.count === end_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > end_timing && event.count % 6 === 0 && event.count < end1_timing) {
+			if (i < end1.length) {
+		    	text.content += end1.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === end1_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > end1_timing && event.count % 6 === 0 && event.count < end2_timing) {
+			if (i < end2.length) {
+		    	text.content += end2.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === end2_timing) {
+			text.content = '';
+			i = 0;
+		}
+		if (event.count > end2_timing && event.count % 6 === 0) {
+			if (i < end3.length) {
+		    	text.content += end3.charAt(i);	 
+			    i++;
+			}
+		}
+
+		if (event.count === end3_timing) {
+			text.content = '';
+		}
+
+		if (event.count > end3_timing) {
+			if(endText.opacity < 1) {
+				endText.opacity += 0.005;
+			} else {
+				bool_end = false;
+			}
+		}
+		
+	}
+}
+
+// keyboard input, only needed once during intro
+////////////////////////////////////////////////////////////////
+
+function onKeyDown(event) {
+	if(activateKeyboard && bool_intro) {
+		if (event.key == 'shift' || event.key == 'command' || event.key == 'option' || event.key == 'caps-lock' || event.key == 'control' || event.key == 'tab' || event.key == 'meta' || event.key == 'alt' || event.key == 'left' || event.key == 'down' || event.key == 'right' || event.key == 'up') return;
+		if (event.modifiers.shift || event.modifiers.capsLock) {
+		    input.content += event.key.toUpperCase();
+		} else if (Key.isDown('space')){
+		    event.preventDefault();
+		    input.content += " ";
+		} else if (Key.isDown('backspace')){
+		    var subStr = input.content.substring(0, input.content.length - 1)
+		    input.content = subStr;
+		} else if (event.key == 'enter') {
+			name = input.content;
+			input.content = '';
+			activateKeyboard = false;
+			sound.stop();
+			red_sound.play();
+		}
+		else{
+		    input.content += event.key;
+		} 
+	}
+}
+
+// sounds
+////////////////////////////////////////////////////////////////
+
+var sound = new Howl({
+	src: ['sounds/water_drops.wav'],
+	autoplay: true,
+	loop: true,
+	volume: 0.5,
+});
+
+var red_sound = new Howl({
+	src: ['sounds/campfire.wav'],
+	loop: true,
+	volume: 0.5,
+});
+
+var blue_sound = new Howl({
+	src: ['sounds/ocean.wav'],
+	loop: true,
+	volume: 0.5,
+});
+
+var yellow_sound = new Howl({
+	src: ['sounds/shooting_star.wav'],
+	volume: 0.1,
+});
+
+var orange_sound = new Howl({
+	src: ['sounds/bossa_nova.mp3'],
+	loop: true,
+	volume: 0.5,
+});
+
+var green_sound = new Howl({
+	src: ['sounds/frogs.wav'],
+	loop: true,
+	volume: 0.5,
+});
